@@ -35,9 +35,11 @@ Library support for the gradient methods:
 |---|---|---|---|
 | diffsol (Rust) | yes | yes | yes (`solve_dense_vjp`, diffsol `main` branch) |
 | pydiffsol | yes | yes | no |
-| diffrax | yes | yes | yes |
-| CasADi | yes | yes | no (CasADi derivatives use the adjoint) |
-| DifferentialEquations.jl | yes | yes | yes |
+| diffrax | forward-mode AD through the solver (`ForwardMode`) | `BacksolveAdjoint` | `RecursiveCheckpointAdjoint` |
+| CasADi | yes (sensitivities as augmented states) | yes (CVODES adjoint) | no (CasADi derivatives use the adjoint) |
+| DifferentialEquations.jl | `ForwardDiffSensitivity` | `InterpolatingAdjoint` (`ReverseDiffVJP`) | no (every reverse-AD option failed) |
+
+Combinations that fail at runtime are recorded as failures in the results and listed, with repros, in `bugs/README.md`. Examples: the pydiffsol adjoint on Robertson and the DFN, diffrax `BacksolveAdjoint`, and all Julia DFN gradients. Julia + Sundials is solve-only on the Brusselator, because its gradients fail.
 
 ### Robertson ODE
 
@@ -60,4 +62,4 @@ The PDE is solved using the method of lines, with the grid size `N` varied. The 
 
 ### DFN battery model
 
-The PyBaMM library defines a DFN model, which is written out to diffsl using PyBaMM's diffsl export. This diffsl is then ported to Julia so that pydiffsol and Julia can be compared; only these two are used for this benchmark. The Julia code uses automatic Jacobian computation. The loss function uses a voltage output and 30 of the model parameters, and its gradient w.r.t. the 30 parameters is computed using forward sensitivity analysis, the continuous adjoint equations and, in Julia, reverse-mode automatic differentiation. Measurements are the same as for the other benchmarks.
+The PyBaMM library defines a DFN model, which is written out to diffsl using PyBaMM's diffsl export. This diffsl is then ported to Julia so that pydiffsol and Julia can be compared; only these two are used for this benchmark. The Julia code uses automatic Jacobian computation. The loss function is a voltage misfit at 100 times over 2500 s. Its gradient is taken w.r.t. 25 model parameters (scalar parameters, plus scale factors on the diffusivities, conductivities and exchange-current densities), using forward sensitivity analysis and the continuous adjoint equations. Parameters that enter the initial conditions or the geometry are excluded, because PyBaMM's diffsl export rejects them. Measurements are the same as for the other benchmarks.

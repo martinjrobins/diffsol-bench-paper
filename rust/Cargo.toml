@@ -1,0 +1,12 @@
+[package]
+name = "bench"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+diffsol = { git = "https://github.com/martinjrobins/diffsol", branch = "main", default-features = false, features = ["nalgebra"] }
+serde_json = "1"
+
+[profile.release]
+debug = false

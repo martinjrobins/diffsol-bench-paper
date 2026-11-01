@@ -1,0 +1,16 @@
+[project]
+name = "diffsol-bench-paper"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pydiffsol>=0.6.2",
+    "jax[cpu]",
+    "diffrax>=0.7.2",
+    "casadi",
+    "pybamm>=26.7",
+    "matplotlib",
+    "numpy",
+]
+
+[tool.uv]
+package = false
